@@ -41,10 +41,12 @@ spec:
               protocol: TCP
   volumeMounts:
     - name: { { .Values.volumes.config.name } }
-    mountPath: { { .Values.volumes.config.mountPath } }
+      mountPath: { { .Values.volumes.config.mountPath } }
     subPath: config.json
     - name: { { .Values.volumes.persistent.name } }
-    mountPath: { { .Values.volumes.persistent.mountPath } }
+      mountPath: { { .Values.volumes.persistent.mountPath } }
+    - name: init-cont
+      mountPath: /py-app/init-cont/
   env:
     - name: TIME_USER
       valueFrom:
@@ -83,6 +85,19 @@ spec:
         configMap:
           name: config-file
       - name: visit-logs
+      - name: init-cont
+        emptyDir: {}
+    initContainers:
+      - name: init-cont
+        image: busybox:1.28
+        command:
+          - wget
+          - "-O"
+          - "/py-app/init-cont/index.html"
+          - http://info.cern.ch
+        volumeMounts:
+          - name: init
+            mountPath: "/py-app/init-cont/"
     volumeClaimTemplates:
       - metadata:
           name: { { .Values.volumes.persistent.name } }
