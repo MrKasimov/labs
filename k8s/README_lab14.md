@@ -81,3 +81,23 @@ configmap/pink-stat-kube-prometheus-scheduler                           1      1
 configmap/pink-stat-kube-prometheus-workload-total                      1      119s
 configmap/prometheus-pink-stat-kube-prometheus-prometheus-rulefiles-0   29     20s
 ```
+
+### init container
+configuration for init container:
+```yaml
+initContainers:
+    - name: test
+      image: busybox:1.28
+      command:
+        - wget
+        - "-O"
+        - "/app/test/index.html"
+        - http://info.cern.ch
+      volumeMounts:
+        - name: test
+          mountPath: "/app/test/"
+```
+after restarting whole squadron of pods, `kubectl exec pod/devops-time-app-0 -- ls init` prints:
+```shell
+Defaulted container "devops-time-app" out of: devops-time-app, init-cont (init)
+```
