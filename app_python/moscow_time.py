@@ -14,14 +14,22 @@ metrics.register_default(
     )
 )
 
+
 @app.route('/')
 def moscow_time():
     """Handler for moscow time requests"""
     tz = pytz.timezone('Europe/Moscow')
     now = datetime.now(tz)  # current date and time
     time = now.strftime("%H:%M:%S")
-
+    with open('./access.log', 'a') as file:
+        file.write(time + '\n')
     return render_template("moscow-time.html", time=time)
+
+
+@app.route('/visits')
+def show_visits():
+    with open('./access.log', 'r') as file:
+        return '<div>'.join(file.readlines())
 
 
 if __name__ == '__main__':
